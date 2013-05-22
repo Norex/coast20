@@ -11,7 +11,6 @@
         keyword = window.currentKeyword,
         tweets = [];
     socket.on('twitter', function(data) {
-      console.log(data);
       processTweet(data);
     });
 

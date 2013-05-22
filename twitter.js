@@ -1,5 +1,24 @@
 var Twit = require('twit'),
-    nconf = require('nconf');
+    nconf = require('nconf'),
+    Db = require('mongodb').Db,
+    Connection = require('mongodb').Connection,
+    Server = require('mongodb').Server;
+
+var mongohost = nconf.get('MONGO_URL');
+
+console.log("Connecting to Mongo @ " + mongohost);
+
+Db.connect(mongohost, function(err, db) {
+  console.log(err);
+
+  db.collection('test', function(err, collection) {
+    console.log(err);
+    collection.insert({'test': 2}, function(err, inserted) {
+      console.log(err);
+      db.close();
+    });
+  });
+});
 
 var twit = new Twit({
     consumer_key: nconf.get('TWITTER_CONSUMER_KEY'),
