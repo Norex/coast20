@@ -28,9 +28,27 @@ if ('development' == app.get('env')) {
 
 app.get('/', routes.index);
 
+
+
+app.set('db', db);
+
 var server = http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
 });
 
-var io = socketIo.listen(server);
-twitter.run(nconf.get('KEYWORD'), io);
+var mongodb = require('mongodb');
+var db = new mongodb.Db('nodejitsu_norex_nodejitsudb304707281',
+  new mongodb.Server('ds059907.mongolab.com', 59907, {})
+);
+db.open(function (err, db) {
+  if (err) { throw err; }
+  db.authenticate('nodejitsu_norex', 'v814g6c2ur4msssjifst5s2e5h', function (err, replies) {
+    if (err) { throw err; }
+
+    var io = socketIo.listen(server);
+    app.set('db', db);
+    twitter.run(nconf.get('KEYWORD'), io, app);
+  });
+});
+// var io = socketIo.listen(server);
+// twitter.run(nconf.get('KEYWORD'), io, app);
