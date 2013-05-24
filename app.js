@@ -6,7 +6,8 @@ var express = require('express'),
     http = require('http'),
     path = require('path'),
     twitter = require('./twitter'),
-    socketIo = require('socket.io');
+    socketIo = require('socket.io'),
+    mongodb = require('mongodb');
 
 var app = express();
 
@@ -22,33 +23,28 @@ app.use(app.router);
 app.use(express.static(path.join(__dirname, 'public')));
 
 // development only
-if ('development' == app.get('env')) {
+if ('development' == app.get('env'))
   app.use(express.errorHandler());
-}
 
-app.get('/', routes.index);
-
-
-
-app.set('db', db);
-
-var server = http.createServer(app).listen(app.get('port'), function(){
+var server = http.createServer(app).listen(app.get('port'), function() {
   console.log('Express server listening on port ' + app.get('port'));
 });
 
-var mongodb = require('mongodb');
-var db = new mongodb.Db('nodejitsu_norex_nodejitsudb304707281',
-  new mongodb.Server('ds059907.mongolab.com', 59907, {})
-);
+var db = new mongodb.Db(nconf.get('MONGODB_NAME'), new mongodb.Server(nconf.get('MONDODB_SERVER'), nconf.get('MONDODB_PORT'), {}));
 db.open(function (err, db) {
   if (err) { throw err; }
-  db.authenticate('nodejitsu_norex', 'v814g6c2ur4msssjifst5s2e5h', function (err, replies) {
-    if (err) { throw err; }
+
+  db.authenticate(nconf.get('MONDODB_USERNAME'), nconf.get('MONDODB_PASSWORD'), function (err, replies) {
+    if (err)
+      throw err;
+
+    app.set('db', db);
+
+    app.get('/', routes.index);
+    app.get('/history', routes.history);
+    app.get('/gethistory', routes.getHistory);
 
     var io = socketIo.listen(server);
-    app.set('db', db);
     twitter.run(nconf.get('KEYWORD'), io, app);
   });
 });
-// var io = socketIo.listen(server);
-// twitter.run(nconf.get('KEYWORD'), io, app);

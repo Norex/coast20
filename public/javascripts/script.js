@@ -10,9 +10,17 @@
     var socket = io.connect(window.location.hostname),
         keyword = window.currentKeyword,
         tweets = [];
-    socket.on('twitter', function(data) {
-      processTweet(data);
-    });
+    if (window.isHistoryPage) {
+      $.get('/gethistory', function(data) {
+        for (var i = 0; i < data.length; i++)
+          processTweet(data[i]);
+      });
+    }
+    else {
+      socket.on('twitterLive', function(data) {
+        processTweet(data);
+      });
+    }
 
     var processTweet = function(data) {
       picTwitter = scrapePicTwitter(data);
@@ -27,7 +35,8 @@
       });
 
       $('#tweets').prepend(new_picture);
-      $('#tweets > div').slice(50).remove();
+      if (!window.isHistoryPage)
+        $('#tweets > div').slice(50).remove();
     };
 
     var scrapeVine = function(data) {

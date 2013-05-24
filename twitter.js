@@ -24,7 +24,7 @@ module.exports.run = function(keyword, io, app) {
 
   tweetStream = twit.stream('statuses/filter', { track: keyword });
   tweetStream.on('tweet', function (tweet) {
-    app.get('db').collection('test', function(err, collection) {
+    app.get('db').collection('tweets', function(err, collection) {
       if (err) { throw err; }
       collection.insert(tweet, function(err, inserted) {
         if (err) { throw err; }
@@ -35,7 +35,7 @@ module.exports.run = function(keyword, io, app) {
       });
     });
 
-    io.sockets.emit('twitter', tweet);
+    io.sockets.emit('twitterLive', tweet);
   });
 
   tweetStream.on('limit', function (limitMessage) {
