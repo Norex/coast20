@@ -1,5 +1,6 @@
 (function($) {
   $(document).ready(function() {
+
     // Hand keyword submission to changed tracked keyword.
     $('#keyword-form').submit(function(){
       $.post("", { keyword: $('#keyword').val(), time: "2pm" } );
@@ -22,13 +23,42 @@
       });
     }
 
+    var parse_tweet = function (str) {
+      var create_link = function (url, text) {
+        var link = $("<a>", {
+          text: text,
+          href: url,
+          target: "_blank"
+        });
+
+        return link.prop('outerHTML');
+      };
+
+      // parse URLs
+      str = str.replace(/[A-Za-z]+:\/\/[A-Za-z0-9-_]+\.[A-Za-z0-9-_:%&~\?\/.=]+/g, function (s) {
+        return create_link(s, s);
+      });
+
+      // parse username
+      str = str.replace(/[@]+[A-Za-z0-9_]+/g, function (s) {
+        return create_link("http://twitter.com/" + s.replace('@', ''), s);
+      });
+
+      // parse hashtags
+      str = str.replace(/[#]+[A-Za-z0-9_]+/g, function (s) {
+        return create_link("http://search.twitter.com/search?q=" + s.replace('#', ''), s);
+      });
+
+      return str;
+    };
+
     var processTweet = function(data) {
       picTwitter = scrapePicTwitter(data);
       twitpic = scrapeTwitPic(data);
       instagram = scrapeInstagram(data);
       vine = scrapeVine(data);
 
-      var new_picture = $('<div class="row"><div class="span12"><blockquote class="tweet">' + picTwitter + twitpic + instagram + vine + '<img class="profile" src="' + data.user.profile_image_url + '"/><p>' + data.text.replace(new RegExp('(^|[^\\w\\d#])(' + keyword + ')(\\b|$)','ig'), '$1<strong>$2</strong>$3') + '</p><small>' + data.user.screen_name + '</small></p></blockquote></div></div>');
+      var new_picture = $('<div class="row"><div class="span12"><blockquote class="tweet">' + picTwitter + twitpic + instagram + vine + '<img class="profile" src="' + data.user.profile_image_url + '"/><p>' + parse_tweet(data.text.replace(new RegExp('(^|[^\\w\\d#])(' + keyword + ')(\\b|$)','ig'), '$1<strong>$2</strong>$3')) + '</p><small>' + data.user.screen_name + '</small></p></blockquote></div></div>');
 
       new_picture.find('img.picture').error(function () {
         $(this).hide();

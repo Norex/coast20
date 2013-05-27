@@ -7,7 +7,6 @@ exports.index = function(req, res) {
 
 exports.history = function(req, res, io) {
   res.render('history', { currentKeyword: nconf.get('KEYWORD'), isHistoryPage: true });
-
 };
 
 exports.getHistory = function(req, res, io) {
@@ -17,7 +16,7 @@ exports.getHistory = function(req, res, io) {
     collection.find().toArray(function(err, items) {
       if (err) { throw err; }
 
-      res.json(items)
+      res.json(items);
     });
   });
 

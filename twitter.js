@@ -29,9 +29,9 @@ module.exports.run = function(keyword, io, app) {
       collection.insert(tweet, function(err, inserted) {
         if (err) { throw err; }
 
-        collection.count(function(err, count) {
-          console.log("There are " + count + " records in the test collection. Here they are:");
-        });
+        // collection.count(function(err, count) {
+        //   console.log("There are " + count + " records in the test collection. Here they are:");
+        // });
       });
     });
 
