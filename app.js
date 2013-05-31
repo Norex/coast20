@@ -42,7 +42,9 @@ db.open(function (err, db) {
 
     app.get('/', routes.index);
     app.get('/history', routes.history);
+    app.get('/hashpipe', routes.history);
     app.get('/gethistory', routes.getHistory);
+    app.get('/getrecenthistory', routes.getRecentHistory);
 
     var io = socketIo.listen(server);
     twitter.run(nconf.get('KEYWORD'), io, app);
