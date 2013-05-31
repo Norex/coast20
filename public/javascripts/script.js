@@ -20,10 +20,8 @@
     else {
       $.get('/getrecenthistory', function(data) {
         data = data.reverse();
-        for (var i = 0; i < data.length; i++) {
-          console.log(data[i]);
+        for (var i = 0; i < data.length; i++)
           processTweet(data[i]);
-        }
 
         socket.on('twitterLive', function(tweetData) {
           processTweet(tweetData);
