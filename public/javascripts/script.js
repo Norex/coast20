@@ -134,7 +134,7 @@
       try{
         for(var i=0; i<data.entities.urls.length; i++){
           if(/instagram\.com\//.test(data.entities.urls[i].display_url)){
-            var pic = data.entities.urls[i].display_url.replace(/^instagram\.com\/p\/([a-zA-Z0-9_]+)\/*.*/, "$1");
+            var pic = data.entities.urls[i].display_url.replace(/^instagram\.com\/p\/([a-zA-Z0-9\-_]+)\/*.*/, "$1");
             output += formatPhoto('http://instagram.com/p/' + pic + '/media?size=l', 'pic-instagram');
           }
         }
