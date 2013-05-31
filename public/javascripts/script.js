@@ -52,13 +52,26 @@
       return str;
     };
 
+    var tweetText= function(data) {
+      if (typeof data.retweeted_status != 'undefined') {
+        var retweetedUser = data.retweeted_status.user.screen_name;
+        var retweetedUserProfileUrl = 'http://twitter.com/' + data.retweeted_status.user.screen_name;
+        var tweetText = 'RT @' + retweetedUser + ': ' + data.retweeted_status.text;
+        
+        return parse_tweet(tweetText.replace(new RegExp('(^|[^\\w\\d#])(' + keyword + ')(\\b|$)','ig'), '$1<strong>$2</strong>$3'));
+      }
+      else {
+        return parse_tweet(data.text.replace(new RegExp('(^|[^\\w\\d#])(' + keyword + ')(\\b|$)','ig'), '$1<strong>$2</strong>$3'))
+      }
+    };
+
     var processTweet = function(data) {
       picTwitter = scrapePicTwitter(data);
       twitpic = scrapeTwitPic(data);
       instagram = scrapeInstagram(data);
       vine = scrapeVine(data);
 
-      var new_picture = $('<div class="row"><div class="span12"><blockquote class="tweet">' + picTwitter + twitpic + instagram + vine + '<img class="profile" src="' + data.user.profile_image_url + '"/><p>' + parse_tweet(data.text.replace(new RegExp('(^|[^\\w\\d#])(' + keyword + ')(\\b|$)','ig'), '$1<strong>$2</strong>$3')) + '</p><small>' + data.user.screen_name + '</small></p></blockquote></div></div>');
+      var new_picture = $('<div class="row"><div class="span12"><blockquote class="tweet">' + picTwitter + twitpic + instagram + vine + '<img class="profile" src="' + data.user.profile_image_url + '"/><p>' + tweetText(data) + '</p><small>' + data.user.screen_name + '</small></p></blockquote></div></div>');
 
       new_picture.find('img.picture').error(function () {
         $(this).hide();
